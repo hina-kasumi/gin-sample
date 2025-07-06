@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"goprj/entities"
 	"goprj/services"
+	"log"
 	"net/http"
-	"os"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt/v5"
 )
 
 func UserLoaderMiddleware() gin.HandlerFunc {
@@ -21,33 +21,35 @@ func UserLoaderMiddleware() gin.HandlerFunc {
 				jwtEncode := jwtPart[1] // lấy token
 
 				// decode jwt
-				token, err := jwt.Parse(jwtEncode, func(token *jwt.Token) (interface{}, error) {
-					if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-						return nil, fmt.Errorf("unexpected signing method")
-					}
-					secret := []byte(os.Getenv("JWT_SECRET"))
-					return secret, nil
-				})
+				claims, err := services.ParseToken(jwtEncode)
+
+				expToken := claims["exp"].(float64)
+				if expToken < float64(time.Now().Unix()) {
+					log.Println("ERROR: token is expried")
+					return
+				}
 
 				if err != nil {
 					println(err.Error())
 					return
 				}
 
-				// lấy thông tin người dùng
-				if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-					email := claims["email"].(string)
-					fmt.Printf("Authenticated request for email: %s\n", email)
-
-					user := &entities.User{
-						Email: email,
-					}
-					if email != "" {
-						user, _ = services.FindOneUser(*user)
-					}
-
-					ctx.Set("currentUser", *user) //set người dùng vào context
+				if services.IsTokenInBlackList(jwtEncode) {
+					return
 				}
+
+				// lấy thông tin người dùng
+				sub := claims["sub"].(string)
+				fmt.Printf("Authenticated request for email: %s\n", sub)
+
+				user := &entities.User{
+					Email: sub,
+				}
+				if sub != "" {
+					user, _ = services.FindOneUser(*user)
+				}
+
+				ctx.Set("currentUser", *user) //set người dùng vào context
 			}
 		}
 	}

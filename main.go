@@ -5,6 +5,7 @@ import (
 	"goprj/infrastructures"
 	"goprj/middlewares"
 	"goprj/routes"
+	"goprj/services"
 	"log"
 	"os"
 
@@ -27,6 +28,8 @@ func main() {
 	if db != nil {
 		db.AutoMigrate(&entities.User{}, &entities.Task{})
 	}
+
+	services.InitRedis(os.Getenv("REDIS_ADDRESS"))
 
 	// 2. Tạo router
 	r := gin.Default()

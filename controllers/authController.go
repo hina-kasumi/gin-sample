@@ -2,9 +2,9 @@ package controllers
 
 import (
 	dtos "goprj/DTOs"
-	"goprj/entities"
 	"goprj/services"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -16,21 +16,24 @@ func Login(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
 		return
 	}
-	user := &entities.User{Email: req.Email, Password: req.Password}
-	dbUser, err := services.FindOneUser(*user)
 
-	if err != nil || dbUser.IsValidPassword(user.Password) != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid email or password"})
-		return
-	}
-
-	tokenString, err := services.GenToken(req.Email)
+	tokenString, err := services.LoginService(req)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Could not generate token"})
-		return
+		ctx.JSON(http.StatusUnauthorized, err)
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"token": tokenString,
+	})
+}
+
+func Logout(ctx *gin.Context) {
+	bearer := ctx.Request.Header.Get("Authorization") // lấy header xác thực
+	if err := services.LogoutService(strings.Split(bearer, " ")[1]); err != nil {
+		ctx.JSON(http.StatusInternalServerError, err)
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "logout success",
 	})
 }

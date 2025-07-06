@@ -10,6 +10,11 @@ import (
 )
 
 func GetTaskOfUser(c *gin.Context) {
+	// _, exists := c.Get("currentUser")
+	// if !exists {
+	// 	c.JSON(401, gin.H{"error": "unauthorized"})
+	// 	return
+	// }
 	email := c.Query("email") // Lấy email từ query string
 
 	result, err := services.GetTaskOfUser(email)

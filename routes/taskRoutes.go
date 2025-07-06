@@ -2,11 +2,14 @@ package routes
 
 import (
 	"goprj/controllers"
+	"goprj/middlewares"
 
 	"github.com/gin-gonic/gin"
 )
 
 func RegisterTaskRoutes(router *gin.Engine) {
-	router.POST("/api/task", controllers.AddNewTask)
-	router.GET("/api/task", controllers.GetTaskOfUser)
+	task := router.Group("/api/task")
+	task.Use(middlewares.EnforceAuthenticatedMiddleware())
+	task.POST("", controllers.AddNewTask)
+	task.GET("", controllers.GetTaskOfUser)
 }

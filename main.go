@@ -3,6 +3,7 @@ package main
 import (
 	"goprj/entities"
 	"goprj/infrastructures"
+	"goprj/middlewares"
 	"goprj/routes"
 	"log"
 	"os"
@@ -29,9 +30,12 @@ func main() {
 
 	// 2. Tạo router
 	r := gin.Default()
+	r.Use(middlewares.Cors())
+	r.Use(middlewares.UserLoaderMiddleware())
 	// 3. Đăng ký các routes
 	routes.RegisterUserRoutes(r)
 	routes.RegisterTaskRoutes(r)
+	routes.RegisterAuthRoutes(r)
 
 	// 4. Chạy server
 	if err := r.Run(":8080"); err != nil {

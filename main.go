@@ -1,9 +1,9 @@
 package main
 
 import (
-	"goprj/controllers"
 	"goprj/entities"
 	"goprj/infrastructures"
+	"goprj/routes"
 	"log"
 	"os"
 
@@ -30,7 +30,9 @@ func main() {
 	// 2. Tạo router
 	r := gin.Default()
 	// 3. Đăng ký các routes
-	controllers.RegisterUserRoutes(r)
+	routes.RegisterUserRoutes(r)
+	routes.RegisterTaskRoutes(r)
+
 	// 4. Chạy server
 	if err := r.Run(":8080"); err != nil {
 		log.Fatal("Không thể khởi động server:", err)

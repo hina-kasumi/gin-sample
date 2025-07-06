@@ -10,13 +10,7 @@ import (
 	"github.com/ulule/deepcopier"
 )
 
-func RegisterUserRoutes(router *gin.Engine) {
-	router.POST("/api/user", RegisterUesr)
-	router.GET("/api/user/all", GetAllUser)
-	router.GET("/api/user", GetUser)
-}
-
-func RegisterUesr(c *gin.Context) {
+func RegisterUser(c *gin.Context) {
 	var req dtos.NewUserRequest
 
 	if err := c.ShouldBind(&req); err != nil {

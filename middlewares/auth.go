@@ -4,10 +4,8 @@ import (
 	"fmt"
 	"goprj/entities"
 	"goprj/services"
-	"log"
 	"net/http"
 	"strings"
-	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -23,12 +21,6 @@ func UserLoaderMiddleware() gin.HandlerFunc {
 
 				// decode jwt
 				claims, err := services.ParseAccessToken(jwtEncode)
-
-				expToken := claims["exp"].(float64)
-				if expToken < float64(time.Now().Unix()) {
-					log.Println("ERROR: token is expried")
-					return
-				}
 
 				if err != nil {
 					println(err.Error())

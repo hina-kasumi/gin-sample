@@ -31,7 +31,7 @@ func LogoutService(token string) error {
 }
 
 func AddTokenToBlackList(token string) error {
-	claims, err := ParseToken(token)
+	claims, err := ParseAccessToken(token)
 
 	if err != nil {
 		log.Println("can not parse token")
@@ -52,7 +52,7 @@ func AddTokenToBlackList(token string) error {
 }
 
 func IsTokenInBlackList(token string) bool {
-	claims, err := ParseToken(token)
+	claims, err := ParseAccessToken(token)
 
 	if err != nil {
 		log.Println("can not parse token")

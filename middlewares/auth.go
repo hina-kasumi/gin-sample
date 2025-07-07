@@ -12,6 +12,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// lấy thông tin người dùng từ token
 func UserLoaderMiddleware() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		bearer := ctx.Request.Header.Get("Authorization") // lấy header xác thực
@@ -21,7 +22,7 @@ func UserLoaderMiddleware() gin.HandlerFunc {
 				jwtEncode := jwtPart[1] // lấy token
 
 				// decode jwt
-				claims, err := services.ParseToken(jwtEncode)
+				claims, err := services.ParseAccessToken(jwtEncode)
 
 				expToken := claims["exp"].(float64)
 				if expToken < float64(time.Now().Unix()) {
@@ -55,6 +56,7 @@ func UserLoaderMiddleware() gin.HandlerFunc {
 	}
 }
 
+// kiểm tra là người dùng
 func EnforceAuthenticatedMiddleware() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		user, exists := ctx.Get("currentUser") // kiểm tra người người dùng sau các filter
